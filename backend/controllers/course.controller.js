@@ -5,8 +5,13 @@ import { v2 as cloudinary } from "cloudinary";
 // ✅ Create Course (Admin)
 export const createCourse = async (req, res) => {
   try {
-    const { title, description, mode, duration, fee, seats } = req.body;
-
+    const { title, description, mode, duration, fee, seats,category } = req.body;
+    if (!category) {
+      return res.status(400).json({
+        success: false,
+        message: "Category is required",
+      });
+    }
     let thumbnail = "";
     let thumbnailPublicId = "";
 
@@ -23,6 +28,7 @@ export const createCourse = async (req, res) => {
     const course = await Course.create({
       title,
       description,
+      category,
       mode,
       duration,
       fee,
@@ -43,16 +49,23 @@ export const createCourse = async (req, res) => {
     });
   }
 };
-
-
-
 // ✅ Get All Courses (Public)
 export const getAllCourses = async (req, res) => {
   try {
-    const courses = await Course.find({ status: "active" });
+    const { category } = req.query;
+
+    let filter = { status: "active" };
+
+    // ✅ apply category filter if provided
+    if (category) {
+      filter.category = category;
+    }
+
+    const courses = await Course.find(filter);
 
     return res.status(200).json({
       success: true,
+      count: courses.length,
       courses,
     });
   } catch (error) {

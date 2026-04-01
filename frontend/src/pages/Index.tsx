@@ -4,9 +4,12 @@ import { Link } from "react-router-dom";
 import {
   FaUserPlus, FaBookOpen, FaUpload, FaFileAlt, FaClock, FaStar,
   FaGraduationCap, FaDesktop, FaUsers, FaCheckCircle, FaArrowRight,
-  FaUniversity, FaAward, FaShieldAlt
+  FaUniversity, FaAward, FaShieldAlt,
+  FaLaptop,
+  FaMoneyBillWave
 } from "react-icons/fa";
-
+import { useEffect, useState } from "react";
+import api from "@/lib/api";
 const stats = [
   { value: "12,000+", label: "Students Enrolled" },
   { value: "200+", label: "Courses Offered" },
@@ -21,23 +24,7 @@ const steps = [
   { icon: FaFileAlt, title: "Get Offer Letter", desc: "Receive your admission offer digitally" },
 ];
 
-const courses = [
-  { name: "BS Computer Science", category: "Computer Science", duration: "4 Years", fee: "PKR 45,000", img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=80" },
-  { name: "MBA Business Administration", category: "Business", duration: "2 Years", fee: "PKR 80,000", img: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80" },
-  { name: "BS Electrical Engineering", category: "Engineering", duration: "4 Years", fee: "PKR 55,000", img: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=600&q=80" },
-  { name: "MBBS Medicine", category: "Medical", duration: "5 Years", fee: "PKR 1,20,000", img: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&q=80" },
-  { name: "BS Artificial Intelligence", category: "Computer Science", duration: "4 Years", fee: "PKR 50,000", img: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80" },
-  { name: "BBA Finance", category: "Business", duration: "4 Years", fee: "PKR 60,000", img: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80" },
-  { name: "BS Civil Engineering", category: "Engineering", duration: "4 Years", fee: "PKR 52,000", img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80" },
-  { name: "BS Psychology", category: "Social Sciences", duration: "4 Years", fee: "PKR 40,000", img: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80" },
-  { name: "BS Mass Communication", category: "Media", duration: "4 Years", fee: "PKR 38,000", img: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=600&q=80" },
-  { name: "BS Architecture", category: "Design", duration: "5 Years", fee: "PKR 65,000", img: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=600&q=80" },
-  { name: "BS Pharmacy", category: "Medical", duration: "5 Years", fee: "PKR 90,000", img: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&q=80" },
-  { name: "BS Data Science", category: "Computer Science", duration: "4 Years", fee: "PKR 48,000", img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80" },
-  { name: "LLB Law", category: "Law", duration: "5 Years", fee: "PKR 70,000", img: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80" },
-  { name: "BS Education", category: "Education", duration: "4 Years", fee: "PKR 35,000", img: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&q=80" },
-  { name: "BS Mechanical Engineering", category: "Engineering", duration: "4 Years", fee: "PKR 53,000", img: "https://images.unsplash.com/photo-1537462715879-360eeb61a0ad?w=600&q=80" },
-];
+
 
 const testimonials = [
   { quote: "CCOG made my admission process so easy. I applied online and got my offer letter within a week!", name: "Sarah Ahmed", course: "BS Computer Science" },
@@ -51,8 +38,44 @@ const features = [
   { icon: FaCheckCircle, title: "Real-Time Tracking", desc: "Track your application status at every step" },
   { icon: FaAward, title: "Instant Offer Letter", desc: "Receive your digital offer letter upon approval" },
 ];
+interface Course {
+  _id: string;
+  title: string;
+  description: string;
+  status:string,
+  duration: string;
+  mode: string;
+  seats: number;
+  fee: number;
+  image: string;
+  thumbnail: string;
+  category: string;
+}
 
 export default function LandingPage() {
+const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+console.log(api);
+
+   const getCourses = async () => {
+    try {
+      const { data } = await api.get(
+        "/courses"
+      );
+      console.log("data",data);
+      
+      setCourses(data.courses || []);
+    } catch (error) {
+      console.error("Error fetching  courses:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  console.log("courses",courses);
+  
+  useEffect(()=>{
+    getCourses()
+  },[])
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -213,32 +236,79 @@ export default function LandingPage() {
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">Popular Courses</h2>
               <p className="mt-2 text-sm sm:text-base text-muted-foreground">Explore our most sought-after programs</p>
             </div>
-            <Link to="/courses" className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+            {/* <Link to="/courses" className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
               View All <FaArrowRight size={12} />
-            </Link>
+            </Link> */}
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-            {courses.map((c) => (
-              <div key={c.name} className="bg-background border border-border rounded-card shadow-soft overflow-hidden hover:shadow-lift transition-all group">
-                <div className="h-36 sm:h-44 relative overflow-hidden">
-                  <img src={c.img} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <span className="absolute bottom-3 left-3 text-xs font-semibold bg-white/20 backdrop-blur-sm text-white px-2.5 py-1 rounded-full">{c.category}</span>
-                </div>
-                <div className="p-4 sm:p-5">
-                  <h3 className="font-bold text-foreground text-sm sm:text-base">{c.name}</h3>
-                  <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1"><FaClock size={11} /> {c.duration}</span>
-                    <span className="flex items-center gap-1"><FaStar size={11} className="text-yellow-400" /> 4.8</span>
-                  </div>
-                  <p className="mt-2 font-bold text-foreground text-sm">{c.fee}<span className="text-xs font-normal text-muted-foreground"> / semester</span></p>
-                  <Link to="/register" className="mt-3 flex items-center justify-center gap-2 py-2.5 bg-primary text-primary-foreground rounded-input text-sm font-semibold hover:opacity-90 transition-all">
-                    Apply Now <FaArrowRight size={11} />
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                        {courses.map((course) => (
+                          <div
+                            key={course._id}
+                            className="group bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                          >
+                            <div className="h-52 w-full overflow-hidden bg-muted">
+                              <img
+                                src={
+                                  course.thumbnail ||
+                                  "https://via.placeholder.com/600x400?text=Course+Image"
+                                }
+                                alt={course.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              />
+                            </div>
+          
+                            <div className="p-5">
+                              <div className="flex items-center justify-between gap-3 mb-3">
+                                <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary">
+                                  {course.category}
+                                </span>
+                                <span className="text-xs font-medium text-muted-foreground uppercase">
+                                  {course.status}
+                                </span>
+                              </div>
+          
+                              <h2 className="text-xl font-bold text-foreground mb-2 line-clamp-1">
+                                {course.title}
+                              </h2>
+          
+                              <p className="text-sm text-muted-foreground leading-6 mb-4 line-clamp-3">
+                                {course.description}
+                              </p>
+          
+                              <div className="space-y-2 mb-5">
+                                <div className="flex items-center gap-2 text-sm text-foreground">
+                                  <FaClock className="text-primary" />
+                                  <span>
+                                    <strong>Duration:</strong> {course.duration}
+                                  </span>
+                                </div>
+          
+                                <div className="flex items-center gap-2 text-sm text-foreground">
+                                  <FaLaptop className="text-primary" />
+                                  <span>
+                                    <strong>Mode:</strong> {course.mode}
+                                  </span>
+                                </div>
+          
+                                <div className="flex items-center gap-2 text-sm text-foreground">
+                                  <FaMoneyBillWave className="text-primary" />
+                                  <span>
+                                    <strong>Fee:</strong> Rs. {course.fee}
+                                  </span>
+                                </div>
+                              </div>
+          
+                              <Link
+                                to={`/courses/details/${course._id}`}
+                                className="inline-flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-all"
+                              >
+                                Learn More
+                                <FaArrowRight size={13} />
+                              </Link>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
           <div className="text-center mt-6 sm:hidden">
             <Link to="/courses" className="text-sm font-semibold text-primary hover:underline flex items-center justify-center gap-1">
               View All Courses <FaArrowRight size={12} />

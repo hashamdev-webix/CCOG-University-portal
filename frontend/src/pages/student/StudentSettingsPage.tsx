@@ -102,7 +102,7 @@ export default function StudentSettingsPage() {
         </div>
       </div>
 
-      <div className="bg-background border border-border rounded-card shadow-soft p-6">
+      {/* <div className="bg-background border border-border rounded-card shadow-soft p-6">
         <div className="flex items-center gap-2 mb-5">
           <Lock size={16} className="text-accent" />
           <h3 className="font-semibold text-foreground">Change Password</h3>
@@ -173,7 +173,7 @@ export default function StudentSettingsPage() {
             <button className="px-3 py-1.5 border border-destructive/30 text-destructive rounded-input text-xs hover:bg-destructive/5 transition-colors">Delete</button>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <button
         onClick={handleSave}

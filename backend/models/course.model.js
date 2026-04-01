@@ -13,7 +13,11 @@ const courseSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
+    category: {
+      type: String,
+      enum: ["business", "technology", "short"],
+      required: true,
+    },
     mode: {
       type: String,
       enum: ["online", "offline"],

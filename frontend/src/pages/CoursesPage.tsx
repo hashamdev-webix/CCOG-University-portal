@@ -34,20 +34,28 @@ export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api
-      .get("/courses")
-      .then((res) => setCourses(res.data.courses || res.data))
-      .catch(() => setCourses([]))
-      .finally(() => setLoading(false));
-  }, []);
+   const getCourses = async () => {
+    try {
+      const { data } = await api.get(
+        "/courses"
+      );
+      setCourses(data.courses || []);
+    } catch (error) {
+      console.error("Error fetching  courses:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(()=>{
+    getCourses
+  },[])
 
   const filtered = courses.filter((c) => {
     const matchFilter =
       activeFilter === "All" ||
       c.category === activeFilter ||
       c.mode === activeFilter;
-    const matchSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchSearch = c?.name?.toLowerCase().includes(searchQuery.toLowerCase());
     return matchFilter && matchSearch;
   });
 

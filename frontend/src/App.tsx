@@ -42,7 +42,19 @@ import PaymentsPage from "./pages/admin/PaymentsPage.tsx";
 import DocumentsPage from "./pages/admin/DocumentsPage.tsx";
 import OffersPage from "./pages/admin/OffersPage.tsx";
 import SettingsPage from "./pages/admin/SettingsPage.tsx";
-
+import BusinessCourses from "./pages/courses/BusinessCourses.tsx";
+import TechnologyCourses from "./pages/courses/TechnologyCourses.tsx";
+import ShortCourses from "./pages/courses/ShortCourses.tsx";
+import CourseDetails from "./pages/courses/CourseDetails.tsx";
+import HowToApply from "./pages/HowToApply.tsx";
+import Requirements from "./pages/Requirements.tsx";
+import FeesScholarships from "./pages/FeeScholarships.tsx";
+import CampusLife from "./pages/CampusLife.tsx";
+import EventsPage from "./pages/EventsPage.tsx";
+import StudentSupport from "./pages/StudentSupport.tsx";
+import NewsPage from "./pages/NewsPage.tsx";
+import ArticlesPage from "./pages/ArticlesPage.tsx";
+import PublicationsPage from "./pages/PublicationsPage.tsx";
 const queryClient = new QueryClient();
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
@@ -74,11 +86,28 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/courses" element={<CoursesPage />} />
+            {/* <Route path="/courses" element={<CoursesPage />} /> */}
             <Route path="/about" element={<AboutPage />} />
             <Route path="/admissions" element={<AdmissionsPage />} />
             <Route path="/contact" element={<ContactPage />} />
 
+             {/* Courses */}
+      <Route path="/courses/business" element={<BusinessCourses />} />
+      <Route path="/courses/technology" element={<TechnologyCourses />} />
+      <Route path="/courses/short" element={<ShortCourses />} />
+<Route path="/courses/details/:id" element={<CourseDetails />} />
+
+ <Route path="/admissions/how-to-apply" element={<HowToApply />} />
+      <Route path="/admissions/requirements" element={<Requirements />} />
+      <Route path="/admissions/fees-scholarships" element={<FeesScholarships />} />
+
+      <Route path="/student-life/campus-life" element={<CampusLife />} />
+      <Route path="/student-life/events" element={<EventsPage />} />
+      <Route path="/student-life/student-support" element={<StudentSupport />} />
+
+      <Route path="/research/news" element={<NewsPage />} />
+      <Route path="/research/articles" element={<ArticlesPage />} />
+      <Route path="/research/publications" element={<PublicationsPage />} />
             {/* Student Dashboard */}
             <Route path="/dashboard" element={<StudentRoute><StudentLayout /></StudentRoute>}>
               <Route index element={<StudentOverview />} />
