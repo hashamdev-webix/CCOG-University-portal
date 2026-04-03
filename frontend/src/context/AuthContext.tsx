@@ -17,8 +17,9 @@ interface AuthContextType {
   adminLogin: (email: string, password: string) => Promise<void>;
   register: (data: Record<string, string>) => Promise<User>;
   logout: () => Promise<void>;
+  currency: string;
 }
-
+const currency = import.meta.env.VITE_CURRENCY
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -54,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, adminLogin, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, adminLogin, register, logout ,currency}}>
       {children}
     </AuthContext.Provider>
   );

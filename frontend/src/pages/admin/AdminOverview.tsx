@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { TrendingUp, Clock, CheckCircle } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { TrendingUp, Clock, CheckCircle, CreditCard } from "lucide-react";
 import { StatusBadge } from "@/components/StatusBadge";
 import api from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 const statusVariantMap: Record<string, "warning" | "success" | "danger" | "info"> = {
   submitted: "warning",
@@ -25,20 +26,31 @@ export default function AdminOverview() {
   const [applications, setApplications] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
+const {currency}=useAuth();
   useEffect(() => {
     Promise.all([api.get("/applications/admin"), api.get("/payments/admin")])
       .then(([appRes, payRes]) => {
-        setApplications(appRes.data.applications);
-        setPayments(payRes.data.payments);
+        setApplications(appRes.data.applications || []);
+        setPayments(payRes.data.payments || []);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
-  const totalRevenue = payments
-    .filter((p) => p.paymentStatus === "paid")
-    .reduce((sum, p) => sum + p.amount, 0);
+  const paidPayments = useMemo(
+    () => payments.filter((p) => p.paymentStatus === "paid"),
+    [payments]
+  );
+
+  const pendingPayments = useMemo(
+    () => payments.filter((p) => p.paymentStatus === "pending"),
+    [payments]
+  );
+
+  const totalRevenue = useMemo(
+    () => paidPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0),
+    [paidPayments]
+  );
 
   const pending = applications.filter((a) => a.status === "submitted").length;
 
@@ -52,27 +64,54 @@ export default function AdminOverview() {
     return acc;
   }, {});
 
-  const docsPending = applications.filter((a) => a.status === "documents_pending");
+  const averageRevenue =
+    paidPayments.length > 0 ? totalRevenue / paidPayments.length : 0;
 
   if (loading) {
-    return <div className="text-center py-12 text-muted-foreground text-sm">Loading...</div>;
+    return (
+      <div className="text-center py-12 text-muted-foreground text-sm">
+        Loading...
+      </div>
+    );
   }
 
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Total Applications", value: String(applications.length), color: "border-l-accent", icon: TrendingUp },
-          { label: "Pending Review", value: String(pending), color: "border-l-warning", icon: Clock },
-          { label: "Approved Today", value: String(approvedToday), color: "border-l-success", icon: CheckCircle },
-          { label: "Total Revenue", value: `$${totalRevenue.toLocaleString()}`, color: "border-l-purple-500", icon: TrendingUp },
+          {
+            label: "Total Applications",
+            value: String(applications.length),
+            color: "border-l-accent",
+            icon: TrendingUp,
+          },
+          
+          {
+            label: "Approved Today",
+            value: String(approvedToday),
+            color: "border-l-success",
+            icon: CheckCircle,
+          },
+          {
+            label: "Total Revenue",
+            value: `${currency} ${totalRevenue.toLocaleString()}`,
+            color: "border-l-purple-500",
+            icon: CreditCard,
+          },
         ].map((k) => (
-          <div key={k.label} className={`bg-background border border-border rounded-card shadow-soft p-5 border-l-4 ${k.color}`}>
+          <div
+            key={k.label}
+            className={`bg-background border border-border rounded-card shadow-soft p-5 border-l-4 ${k.color}`}
+          >
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{k.label}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {k.label}
+              </p>
               <k.icon size={16} className="text-muted-foreground" />
             </div>
-            <p className="text-2xl font-bold text-foreground tabular-nums">{k.value}</p>
+            <p className="text-2xl font-bold text-foreground tabular-nums">
+              {k.value}
+            </p>
           </div>
         ))}
       </div>
@@ -82,23 +121,38 @@ export default function AdminOverview() {
           <div className="px-6 py-4 border-b border-border">
             <h2 className="font-semibold text-foreground">Recent Applications</h2>
           </div>
+
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-surface">
-                  <th className="text-left px-6 py-3 font-medium text-muted-foreground">Student</th>
-                  <th className="text-left px-6 py-3 font-medium text-muted-foreground">Course</th>
-                  <th className="text-left px-6 py-3 font-medium text-muted-foreground hidden sm:table-cell">Date</th>
-                  <th className="text-left px-6 py-3 font-medium text-muted-foreground">Status</th>
+                  <th className="text-left px-6 py-3 font-medium text-muted-foreground">
+                    Student
+                  </th>
+                  <th className="text-left px-6 py-3 font-medium text-muted-foreground">
+                    Course
+                  </th>
+                  <th className="text-left px-6 py-3 font-medium text-muted-foreground hidden sm:table-cell">
+                    Date
+                  </th>
+                  <th className="text-left px-6 py-3 font-medium text-muted-foreground">
+                    Status
+                  </th>
                 </tr>
               </thead>
+
               <tbody>
                 {applications.slice(0, 8).map((a) => (
-                  <tr key={a._id} className="border-b border-border hover:bg-surface transition-colors">
+                  <tr
+                    key={a._id}
+                    className="border-b border-border hover:bg-surface transition-colors"
+                  >
                     <td className="px-6 py-3 font-medium text-foreground">
                       {a.studentId?.firstName} {a.studentId?.lastName}
                     </td>
-                    <td className="px-6 py-3 text-muted-foreground">{a.courseId?.title}</td>
+                    <td className="px-6 py-3 text-muted-foreground">
+                      {a.courseId?.title}
+                    </td>
                     <td className="px-6 py-3 text-muted-foreground hidden sm:table-cell">
                       {new Date(a.createdAt).toLocaleDateString()}
                     </td>
@@ -109,9 +163,15 @@ export default function AdminOverview() {
                     </td>
                   </tr>
                 ))}
+
                 {applications.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">No applications yet</td>
+                    <td
+                      colSpan={4}
+                      className="px-6 py-8 text-center text-muted-foreground"
+                    >
+                      No applications yet
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -119,55 +179,78 @@ export default function AdminOverview() {
           </div>
         </div>
 
-        <div className="lg:col-span-2 bg-background border border-border rounded-card shadow-soft p-6">
-          <h2 className="font-semibold text-foreground mb-4">Application Breakdown</h2>
-          <div className="flex justify-center mb-6">
-            <div className="w-40 h-40 rounded-full border-8 border-success relative flex items-center justify-center">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-foreground">{applications.length}</p>
-                <p className="text-xs text-muted-foreground">Total</p>
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-background border border-border rounded-card shadow-soft p-6">
+            <h2 className="font-semibold text-foreground mb-4">
+              Application Breakdown
+            </h2>
+
+            <div className="flex justify-center mb-6">
+              <div className="w-40 h-40 rounded-full border-8 border-success relative flex items-center justify-center">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-foreground">
+                    {applications.length}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Total</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2 text-sm">
+              {[
+                { color: "bg-success", label: "Approved", key: "approved" },
+                { color: "bg-warning", label: "Submitted", key: "submitted" },
+                { color: "bg-destructive", label: "Rejected", key: "rejected" },
+                { color: "bg-accent", label: "Under Review", key: "under_review" },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-sm ${item.color}`} />
+                    <span className="text-muted-foreground">{item.label}</span>
+                  </div>
+                  <span className="font-medium text-foreground">
+                    {statusCounts[item.key] || 0}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-background border border-border rounded-card shadow-soft p-6">
+            <h2 className="font-semibold text-foreground mb-4">Revenue Summary</h2>
+
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Paid Payments</span>
+                <span className="font-semibold text-foreground">
+                  {paidPayments.length}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Pending Payments</span>
+                <span className="font-semibold text-foreground">
+                  {pendingPayments.length}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Total Revenue</span>
+                <span className="font-semibold text-foreground">
+                  {currency} {totalRevenue.toLocaleString()}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Average Payment</span>
+                <span className="font-semibold text-foreground">
+                  {currency} {Math.round(averageRevenue).toLocaleString()}
+                </span>
               </div>
             </div>
           </div>
-          <div className="space-y-2 text-sm">
-            {[
-              { color: "bg-success", label: "Approved", key: "approved" },
-              { color: "bg-warning", label: "Submitted", key: "submitted" },
-              { color: "bg-destructive", label: "Rejected", key: "rejected" },
-              { color: "bg-accent", label: "Under Review", key: "under_review" },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-sm ${item.color}`} />
-                  <span className="text-muted-foreground">{item.label}</span>
-                </div>
-                <span className="font-medium text-foreground">{statusCounts[item.key] || 0}</span>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
-
-      {docsPending.length > 0 && (
-        <div className="bg-background border border-border rounded-card shadow-soft p-6">
-          <h2 className="font-semibold text-foreground mb-4">Pending Documents</h2>
-          <div className="space-y-3">
-            {docsPending.map((a) => (
-              <div key={a._id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center">
-                    <span className="text-accent text-sm font-medium">{a.studentId?.firstName?.[0]}</span>
-                  </div>
-                  <span className="text-sm text-foreground">
-                    {a.studentId?.firstName} {a.studentId?.lastName}
-                  </span>
-                </div>
-                <StatusBadge variant="warning">Docs Pending</StatusBadge>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </>
   );
 }

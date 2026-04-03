@@ -8,13 +8,15 @@ import { useAuth } from "@/context/AuthContext";
 
 const sidebarItems = [
   { label: "Dashboard", icon: MdDashboard, to: "/admin" },
-  { label: "Applications", icon: BsFileEarmarkText, to: "/admin/applications", badge: "24" },
+  { label: "Applications", icon: BsFileEarmarkText, to: "/admin/applications" },
   { label: "Students", icon: MdPeople, to: "/admin/students" },
   { label: "Courses", icon: MdMenuBook, to: "/admin/courses" },
   { label: "Payments", icon: MdPayment, to: "/admin/payments" },
   { label: "Documents", icon: BsFolderFill, to: "/admin/documents" },
-  { label: "Offer Letters", icon: BsAwardFill, to: "/admin/offers" },
-  { label: "Settings", icon: MdSettings, to: "/admin/settings" },
+  { label: "Articles", icon: BsFileEarmarkText, to: "/admin/articles" },
+  { label: "Contact Messages", icon: BsFileEarmarkText, to: "/admin/contact-messages" },
+  // { label: "Offer Letters", icon: BsAwardFill, to: "/admin/offers" },
+  // { label: "Settings", icon: MdSettings, to: "/admin/settings" },
 ];
 
 export default function AdminLayout() {
@@ -81,9 +83,9 @@ export default function AdminLayout() {
                   <item.icon size={17} />
                   {item.label}
                 </span>
-                {item.badge && (
+                {/* {item.badge && (
                   <span className="bg-accent text-white text-xs px-1.5 py-0.5 rounded-sm font-bold">{item.badge}</span>
-                )}
+                )} */}
               </Link>
             );
           })}

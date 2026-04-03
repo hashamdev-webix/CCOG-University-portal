@@ -13,7 +13,7 @@ const sidebarItems = [
   { label: "Documents", icon: MdUpload, to: "/dashboard/documents" },
   { label: "Payments", icon: MdPayment, to: "/dashboard/payments" },
   { label: "Offer Letter", icon: BsAwardFill, to: "/dashboard/offer" },
-  { label: "Online Classes", icon: MdVideoCall, to: "/dashboard/classes" },
+  // { label: "Online Classes", icon: MdVideoCall, to: "/dashboard/classes" },
   { label: "Settings", icon: MdSettings, to: "/dashboard/settings" },
 ];
 

@@ -5,11 +5,12 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { FaClock, FaLaptop, FaMoneyBillWave, FaArrowRight } from "react-icons/fa";
 import  api  from '@/lib/api';
+import { useAuth } from "@/context/AuthContext";
 
 const TechnologyCourses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-
+const {currency}=useAuth()
   const getTechnologyCourses = async () => {
     try {
       const { data } = await api.get(
@@ -110,7 +111,7 @@ const TechnologyCourses = () => {
                       <div className="flex items-center gap-2 text-sm text-foreground">
                         <FaMoneyBillWave className="text-primary" />
                         <span>
-                          <strong>Fee:</strong> Rs. {course.fee}
+                          <strong>Fee:</strong> {currency} {course?.fee}
                         </span>
                       </div>
                     </div>

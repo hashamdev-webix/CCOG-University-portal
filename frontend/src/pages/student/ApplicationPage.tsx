@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { StatusBadge } from "@/components/StatusBadge";
-import { CheckCircle, Clock, Circle, Send } from "lucide-react";
+import { CheckCircle, Clock, BookOpen, CreditCard, CalendarDays } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 interface Course {
   _id: string;
@@ -10,6 +11,8 @@ interface Course {
   duration: string;
   fee: number;
   mode: string;
+  isFree?: boolean;
+  thumbnail?: string;
 }
 
 interface Application {
@@ -29,7 +32,16 @@ const statusVariantMap: Record<string, "warning" | "success" | "danger" | "info"
   offer_generated: "success",
 };
 
-const steps = ["Personal Info", "Course Selected", "Documents Uploaded", "Fee Paid", "Under Review"];
+const formatStatus = (status: string) => {
+  return status.replace(/_/g, " ");
+};
+
+const getDisplayStatus = (status: string) => {
+  if (status === "approved" || status === "offer_generated") {
+    return "Enrolled";
+  }
+  return formatStatus(status);
+};
 
 export default function ApplicationPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -38,73 +50,129 @@ export default function ApplicationPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+const {currency}=useAuth()
+  const fetchData = async () => {
+    try {
+      const [cRes, aRes] = await Promise.all([
+        api.get("/courses"),
+        api.get("/applications/my-applications"),
+      ]);
 
-  useEffect(() => {
-    Promise.all([
-      api.get("/courses"),
-      api.get("/applications/my-applications"),
-    ]).then(([cRes, aRes]) => {
       setCourses(cRes.data.courses || []);
       setMyApplications(aRes.data.applications || []);
-    }).catch(() => {}).finally(() => setLoading(false));
-  }, []);
-
-  const handleSubmit = async () => {
-    if (!selectedCourseId) return;
-    setSubmitting(true);
-    setError("");
-    try {
-      await api.post("/applications/create", { courseId: selectedCourseId });
-      const res = await api.get("/applications/my-applications");
-      setMyApplications(res.data.applications || []);
-      setSelectedCourseId("");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Failed to submit application");
+    } catch (err) {
+      console.error(err);
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
   };
 
-  if (loading) return <div className="text-center py-16 text-muted-foreground text-sm">Loading...</div>;
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+
+  const getCoursePrice = (course: Course) => {
+    if (course.isFree || Number(course.fee) === 0) return "Free";
+    return `${currency} ${course.fee?.toLocaleString()}`;
+  };
+
+  if (loading) {
+    return (
+      <div className="text-center py-16 text-muted-foreground text-sm">
+        Loading...
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-4xl">
       {/* Existing Applications */}
       {myApplications.length > 0 && (
         <div className="space-y-4 mb-6">
           {myApplications.map((app) => (
-            <div key={app._id} className="bg-background border border-border rounded-card shadow-soft p-5">
-              <div className="flex items-center justify-between mb-4">
+            <div
+              key={app._id}
+              className="bg-background border border-border rounded-card shadow-soft p-5"
+            >
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
                 <div>
-                  <p className="text-sm font-semibold text-foreground">{app.courseId?.title}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">ID: {app.applicationNumber} · {new Date(app.createdAt).toLocaleDateString()}</p>
+                  <p className="text-lg font-semibold text-foreground">
+                    {app.courseId?.title}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Application ID: {app.applicationNumber}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Applied on {new Date(app.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
-                <StatusBadge variant={statusVariantMap[app.status] || "info"}>{app.status.replace("_", " ")}</StatusBadge>
+
+                <StatusBadge variant={statusVariantMap[app.status] || "info"}>
+                  {getDisplayStatus(app.status)}
+                </StatusBadge>
               </div>
 
-              {/* Progress Steps */}
-              <div className="flex items-center justify-between relative">
-                <div className="absolute top-4 left-0 right-0 h-px bg-border z-0" />
-                {steps.map((s, i) => {
-                  const done = i < 2;
-                  const current = i === 2;
-                  return (
-                    <div key={s} className="flex flex-col items-center gap-2 z-10 flex-1">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${done ? "bg-success text-white" : current ? "bg-warning text-white" : "bg-background border-2 border-border"}`}>
-                        {done ? <CheckCircle size={16} /> : current ? <Clock size={16} /> : <Circle size={14} className="text-border" />}
-                      </div>
-                      <p className={`text-xs text-center hidden sm:block ${done ? "text-foreground font-medium" : current ? "text-warning font-medium" : "text-muted-foreground"}`}>{s}</p>
-                    </div>
-                  );
-                })}
+              <div className="grid sm:grid-cols-3 gap-3 mb-5">
+                <div className="border border-border rounded-card p-4 bg-surface/30">
+                  <div className="flex items-center gap-2 mb-2 text-muted-foreground">
+                    <BookOpen size={16} />
+                    <span className="text-xs font-medium">Course</span>
+                  </div>
+                  <p className="text-sm font-semibold text-foreground">
+                    {app.courseId?.title}
+                  </p>
+                </div>
+
+                <div className="border border-border rounded-card p-4 bg-surface/30">
+                  <div className="flex items-center gap-2 mb-2 text-muted-foreground">
+                    <Clock size={16} />
+                    <span className="text-xs font-medium">Duration</span>
+                  </div>
+                  <p className="text-sm font-semibold text-foreground">
+                    {app.courseId?.duration || "N/A"}
+                  </p>
+                </div>
+
+                <div className="border border-border rounded-card p-4 bg-surface/30">
+                  <div className="flex items-center gap-2 mb-2 text-muted-foreground">
+                    <CreditCard size={16} />
+                    <span className="text-xs font-medium">Fee</span>
+                  </div>
+                  <p className="text-sm font-semibold text-foreground">
+                    {getCoursePrice(app.courseId)}
+                  </p>
+                </div>
               </div>
 
-              <div className="flex gap-3 mt-5">
-                <Link to="/dashboard/documents" className="flex-1 text-center py-2.5 bg-primary text-primary-foreground rounded-input text-sm font-medium hover:opacity-90 transition-all">
-                  Upload Documents
+              <div className="rounded-card border border-border bg-primary/5 p-4 mb-5">
+                <div className="flex items-start gap-3">
+                  <CheckCircle size={18} className="text-primary mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      Application Submitted Successfully
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1 leading-6">
+                      Your application has been recorded successfully. If payment has already been completed,
+                      you can now wait for the college review and next update.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link
+                  to={`/courses/details/${app.courseId?._id}`}
+                  className="flex-1 text-center py-2.5 bg-primary text-primary-foreground rounded-input text-sm font-medium hover:opacity-90 transition-all"
+                >
+                  View Course
                 </Link>
-                <Link to="/dashboard/payments" className="flex-1 text-center py-2.5 border border-border text-foreground rounded-input text-sm font-medium hover:bg-surface transition-colors">
-                  Pay Fees
+
+                <Link
+                  to="/"
+                  className="flex-1 text-center py-2.5 border border-border text-foreground rounded-input text-sm font-medium hover:bg-surface transition-colors"
+                >
+                  Back to Home
                 </Link>
               </div>
             </div>
@@ -112,30 +180,7 @@ export default function ApplicationPage() {
         </div>
       )}
 
-      {/* New Application */}
-      <div className="bg-background border border-border rounded-card shadow-soft p-6">
-        <h2 className="font-semibold text-foreground mb-4">Apply for a Course</h2>
-        {error && <p className="text-xs text-destructive mb-3">{error}</p>}
-        <div className="grid sm:grid-cols-2 gap-3 mb-5">
-          {courses.map((c) => (
-            <div key={c._id} onClick={() => setSelectedCourseId(c._id)}
-              className={`border rounded-card p-4 cursor-pointer transition-all ${selectedCourseId === c._id ? "border-accent bg-accent/5" : "border-border hover:border-accent/50"}`}>
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{c.title}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{c.duration} · {c.mode}</p>
-                  <p className="text-sm font-bold text-foreground mt-2">PKR {c.fee?.toLocaleString()}<span className="text-xs font-normal text-muted-foreground">/sem</span></p>
-                </div>
-                {selectedCourseId === c._id && <CheckCircle size={18} className="text-accent shrink-0" />}
-              </div>
-            </div>
-          ))}
-        </div>
-        <button onClick={handleSubmit} disabled={!selectedCourseId || submitting}
-          className="w-full flex items-center justify-center gap-2 py-3 bg-primary text-primary-foreground rounded-input font-medium hover:opacity-90 transition-all disabled:opacity-50">
-          <Send size={16} /> {submitting ? "Submitting..." : "Submit Application"}
-        </button>
-      </div>
+    
     </div>
   );
 }

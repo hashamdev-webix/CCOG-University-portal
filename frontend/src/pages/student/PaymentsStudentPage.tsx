@@ -94,28 +94,7 @@ export default function PaymentsStudentPage() {
         </div>
       )}
 
-      {/* Pay via Stripe */}
-      {applications.length > 0 && (
-        <div className="bg-background border border-border rounded-card shadow-soft p-6 mb-6">
-          <h2 className="font-semibold text-foreground mb-4">Make Payment</h2>
-          {error && <p className="text-xs text-destructive mb-3">{error}</p>}
-          <div className="flex items-center gap-3 p-4 bg-surface rounded-card mb-5">
-            <CreditCard size={20} className="text-accent shrink-0" />
-            <div>
-              <p className="text-sm font-medium text-foreground">Pay via Stripe</p>
-              <p className="text-xs text-muted-foreground">You will be redirected to Stripe secure checkout</p>
-            </div>
-          </div>
-          <button onClick={handlePay} disabled={paying || !selectedAppId}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-primary text-primary-foreground rounded-input font-medium hover:opacity-90 transition-all disabled:opacity-60">
-            <Shield size={16} />
-            {paying ? "Redirecting..." : `Pay USD ${selectedApp?.courseId?.fee?.toLocaleString() || ""}`}
-          </button>
-          <p className="text-xs text-muted-foreground text-center mt-2 flex items-center justify-center gap-1">
-            <Shield size={12} /> Secured by Stripe
-          </p>
-        </div>
-      )}
+     
 
       {/* Payment History */}
       <div className="bg-background border border-border rounded-card shadow-soft overflow-hidden">

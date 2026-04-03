@@ -1,11 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { Toaster } from "@/components/ui/toaster";
+
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { useEffect } from "react";
-
+import { Toaster } from "react-hot-toast";
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [pathname]);
@@ -55,6 +55,11 @@ import StudentSupport from "./pages/StudentSupport.tsx";
 import NewsPage from "./pages/NewsPage.tsx";
 import ArticlesPage from "./pages/ArticlesPage.tsx";
 import PublicationsPage from "./pages/PublicationsPage.tsx";
+import PaymentSuccess from "@/pages/PaymentSuccess.tsx";
+import PaymentCancel from "@/pages/PaymentCancel.tsx";
+import Articles from "./pages/admin/Articles.tsx";
+import InsightDetails from "./pages/InsightDetails.tsx";
+import ContactMessagesPage from "./pages/admin/ContactMessagesPage.tsx";
 const queryClient = new QueryClient();
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
@@ -77,7 +82,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
-        <Toaster />
+       <Toaster position="top-right" />
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
@@ -90,7 +95,8 @@ const App = () => (
             <Route path="/about" element={<AboutPage />} />
             <Route path="/admissions" element={<AdmissionsPage />} />
             <Route path="/contact" element={<ContactPage />} />
-
+ <Route path="/payment-success" element={<PaymentSuccess />} />
+    <Route path="/payment-cancel" element={<PaymentCancel />} />
              {/* Courses */}
       <Route path="/courses/business" element={<BusinessCourses />} />
       <Route path="/courses/technology" element={<TechnologyCourses />} />
@@ -108,6 +114,7 @@ const App = () => (
       <Route path="/research/news" element={<NewsPage />} />
       <Route path="/research/articles" element={<ArticlesPage />} />
       <Route path="/research/publications" element={<PublicationsPage />} />
+      <Route path="/insights/:slug" element={<InsightDetails />} />
             {/* Student Dashboard */}
             <Route path="/dashboard" element={<StudentRoute><StudentLayout /></StudentRoute>}>
               <Route index element={<StudentOverview />} />
@@ -129,6 +136,8 @@ const App = () => (
               <Route path="documents" element={<DocumentsPage />} />
               <Route path="offers" element={<OffersPage />} />
               <Route path="settings" element={<SettingsPage />} />
+              <Route path="articles" element={<Articles />} />
+              <Route path="contact-messages" element={<ContactMessagesPage />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

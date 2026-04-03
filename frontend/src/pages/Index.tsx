@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 const stats = [
   { value: "12,000+", label: "Students Enrolled" },
   { value: "200+", label: "Courses Offered" },
@@ -55,7 +56,7 @@ interface Course {
 export default function LandingPage() {
 const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
-console.log(api);
+const {currency}=useAuth()
 
    const getCourses = async () => {
     try {
@@ -293,7 +294,7 @@ console.log(api);
                                 <div className="flex items-center gap-2 text-sm text-foreground">
                                   <FaMoneyBillWave className="text-primary" />
                                   <span>
-                                    <strong>Fee:</strong> Rs. {course.fee}
+                                    <strong>Fee:</strong> {currency} {course.fee}
                                   </span>
                                 </div>
                               </div>

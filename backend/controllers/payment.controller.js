@@ -155,7 +155,6 @@ export const getAllPayments = async (req, res) => {
       .populate("courseId", "title fee")
       .populate("applicationId", "applicationNumber status")
       .sort({ createdAt: -1 });
-
     return res.status(200).json({
       success: true,
       payments,

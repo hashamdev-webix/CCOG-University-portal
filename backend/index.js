@@ -13,6 +13,10 @@ import applicationRoutes from "./routes/application.routes.js";
 import documentRoutes from "./routes/document.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import stripeWebhookRoutes from "./routes/stripeWebhook.routes.js";
+import insightRoutes from "./routes/insight.routes.js";
+import contactMessageRoutes from "./routes/contactMessage.routes.js";
+
+
 dotenv.config();
 
 const app = express();
@@ -41,5 +45,7 @@ app.use("/api/courses", courseRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/insights", insightRoutes);
+app.use("/api/contact-messages", contactMessageRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

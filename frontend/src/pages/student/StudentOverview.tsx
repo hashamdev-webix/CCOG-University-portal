@@ -100,12 +100,7 @@ export default function StudentOverview() {
             />
           </div>
         </div>
-        <div className="bg-background border border-border rounded-card shadow-soft p-5">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Fee Status</p>
-          <StatusBadge variant={payment ? "success" : "warning"}>
-            {payment ? "Paid" : "Pending"}
-          </StatusBadge>
-        </div>
+       
         <div className="bg-background border border-border rounded-card shadow-soft p-5">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Offer Letter</p>
           <StatusBadge variant={application?.status === "offer_generated" ? "success" : "info"}>
@@ -114,36 +109,7 @@ export default function StudentOverview() {
         </div>
       </div>
 
-      {application && (
-        <div className="bg-background border border-border rounded-card shadow-soft p-6 mb-8">
-          <h2 className="font-semibold text-foreground mb-6">Application Progress</h2>
-          <div className="space-y-4">
-            {timelineStatuses.map((status, i) => {
-              const isDone = i < currentStatusIndex;
-              const isCurrent = i === currentStatusIndex;
-              return (
-                <div key={status} className="flex items-start gap-4">
-                  <div className="flex flex-col items-center">
-                    {isDone ? (
-                      <CheckCircle size={20} className="text-success" />
-                    ) : isCurrent ? (
-                      <Clock size={20} className="text-warning" />
-                    ) : (
-                      <Circle size={20} className="text-border" />
-                    )}
-                    {i < timelineStatuses.length - 1 && (
-                      <div className={`w-px h-6 mt-1 ${isDone ? "bg-success" : "bg-border"}`} />
-                    )}
-                  </div>
-                  <p className={`text-sm pt-0.5 ${isDone ? "text-foreground" : isCurrent ? "text-warning font-medium" : "text-muted-foreground"}`}>
-                    {timelineLabels[status]}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+     
 
       {application && (
         <div className="bg-background border border-border rounded-card shadow-soft p-6 mb-8">

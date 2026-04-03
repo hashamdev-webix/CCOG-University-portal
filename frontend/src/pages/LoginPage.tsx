@@ -217,7 +217,7 @@ export default function LoginPage() {
               <FaGraduationCap size={14} /> Student
             </button>
 
-            <button
+            {/* <button
               type="button"
               onClick={() => setRole("professor")}
               className={`flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-sm transition-colors ${
@@ -227,7 +227,7 @@ export default function LoginPage() {
               }`}
             >
               <FaChalkboardTeacher size={14} /> Professor
-            </button>
+            </button> */}
 
             <button
               type="button"
