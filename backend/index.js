@@ -24,7 +24,7 @@ connectCloudinary();
 app.use("/api/webhooks", stripeWebhookRoutes);
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:8080", // frontend url
+    origin: process.env.CLIENT_URL || "http://localhost:8080", // frontend url
     credentials: true,
   }),
 );
