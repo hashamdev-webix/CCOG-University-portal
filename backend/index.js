@@ -16,7 +16,6 @@ import stripeWebhookRoutes from "./routes/stripeWebhook.routes.js";
 import insightRoutes from "./routes/insight.routes.js";
 import contactMessageRoutes from "./routes/contactMessage.routes.js";
 
-
 dotenv.config();
 
 const app = express();
@@ -25,7 +24,7 @@ connectCloudinary();
 app.use("/api/webhooks", stripeWebhookRoutes);
 app.use(
   cors({
-    origin: "http://localhost:8080", // frontend url
+    origin: process.env.FRONTEND_URL || "http://localhost:8080", // frontend url
     credentials: true,
   }),
 );
@@ -48,4 +47,11 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/insights", insightRoutes);
 app.use("/api/contact-messages", contactMessageRoutes);
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// For local development
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+// Export for Vercel serverless
+export default app;
