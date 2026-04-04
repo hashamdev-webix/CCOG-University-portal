@@ -14,41 +14,28 @@ import { adminOnly } from "../middlewares/admin.middleware.js";
 
 const router = express.Router();
 
-const upload = multer({ dest: "uploads/" });
+// Use memory storage for serverless environments
+const upload = multer({ storage: multer.memoryStorage() });
 // Student routes
 router.post(
   "/upload/:applicationId",
   protect,
   upload.single("file"),
-  uploadDocument
+  uploadDocument,
 );
 
-router.get(
-  "/my/:applicationId",
-  protect,
-  getMyApplicationDocuments
-);
+router.get("/my/:applicationId", protect, getMyApplicationDocuments);
 
-router.delete(
-  "/:id",
-  protect,
-  deleteDocument
-);
-
+router.delete("/:id", protect, deleteDocument);
 
 // Admin routes
 router.get(
   "/admin/application/:applicationId",
   protect,
   adminOnly,
-  getDocumentsByApplicationAdmin
+  getDocumentsByApplicationAdmin,
 );
 
-router.put(
-  "/admin/:id/status",
-  protect,
-  adminOnly,
-  updateDocumentStatus
-);
+router.put("/admin/:id/status", protect, adminOnly, updateDocumentStatus);
 
 export default router;

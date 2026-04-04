@@ -13,13 +13,27 @@ import { protect } from "../middlewares/auth.middleware.js";
 import { adminOnly } from "../middlewares/admin.middleware.js";
 
 const router = express.Router();
-const upload = multer({ dest: "uploads/" });
+
+// Use memory storage for serverless environments
+const upload = multer({ storage: multer.memoryStorage() });
 
 // admin first
 router.get("/admin/all", protect, adminOnly, getAllInsightsAdmin);
 router.get("/admin/:id", protect, adminOnly, getInsightByIdAdmin);
-router.post("/create", protect, adminOnly, upload.single("featuredImage"), createInsight);
-router.put("/update/:id", protect, adminOnly, upload.single("featuredImage"), updateInsight);
+router.post(
+  "/create",
+  protect,
+  adminOnly,
+  upload.single("featuredImage"),
+  createInsight,
+);
+router.put(
+  "/update/:id",
+  protect,
+  adminOnly,
+  upload.single("featuredImage"),
+  updateInsight,
+);
 router.delete("/admin/:id", protect, adminOnly, deleteInsight);
 
 // public

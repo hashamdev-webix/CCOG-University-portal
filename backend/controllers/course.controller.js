@@ -1,6 +1,23 @@
 import Course from "../models/course.model.js";
 import { v2 as cloudinary } from "cloudinary";
 
+// Helper to upload buffer to Cloudinary
+const uploadBufferToCloudinary = (buffer, folder) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: "image",
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      },
+    );
+    uploadStream.end(buffer);
+  });
+};
+
 // helper: convert incoming value to boolean
 const parseBoolean = (value) => {
   if (typeof value === "boolean") return value;
@@ -55,14 +72,21 @@ export const createCourse = async (req, res) => {
     if (!title || !description || !category || !mode || !duration || !seats) {
       return res.status(400).json({
         success: false,
-        message: "Title, description, category, mode, duration, and seats are required",
+        message:
+          "Title, description, category, mode, duration, and seats are required",
       });
     }
 
     const parsedIsFree = parseBoolean(isFree);
     const parsedFee = parsedIsFree ? 0 : Number(fee);
 
-    if (!parsedIsFree && (fee === undefined || fee === null || fee === "" || Number.isNaN(parsedFee))) {
+    if (
+      !parsedIsFree &&
+      (fee === undefined ||
+        fee === null ||
+        fee === "" ||
+        Number.isNaN(parsedFee))
+    ) {
       return res.status(400).json({
         success: false,
         message: "Fee is required for paid courses",
@@ -73,9 +97,10 @@ export const createCourse = async (req, res) => {
     let thumbnailPublicId = "";
 
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "ccog/courses",
-      });
+      const result = await uploadBufferToCloudinary(
+        req.file.buffer,
+        "ccog/courses",
+      );
 
       thumbnail = result.secure_url;
       thumbnailPublicId = result.public_id;
@@ -186,9 +211,10 @@ export const updateCourse = async (req, res) => {
         await cloudinary.uploader.destroy(course.thumbnailPublicId);
       }
 
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "ccog/courses",
-      });
+      const result = await uploadBufferToCloudinary(
+        req.file.buffer,
+        "ccog/courses",
+      );
 
       course.thumbnail = result.secure_url;
       course.thumbnailPublicId = result.public_id;
@@ -235,7 +261,9 @@ export const updateCourse = async (req, res) => {
     }
 
     if (req.body.careerOpportunities !== undefined) {
-      course.careerOpportunities = parseArrayField(req.body.careerOpportunities);
+      course.careerOpportunities = parseArrayField(
+        req.body.careerOpportunities,
+      );
     }
 
     if (req.body.furtherLearning !== undefined) {
@@ -263,7 +291,11 @@ export const updateCourse = async (req, res) => {
         course.fee = parsedFee;
       }
 
-      if (course.fee === undefined || course.fee === null || Number.isNaN(Number(course.fee))) {
+      if (
+        course.fee === undefined ||
+        course.fee === null ||
+        Number.isNaN(Number(course.fee))
+      ) {
         return res.status(400).json({
           success: false,
           message: "Fee is required for paid courses",

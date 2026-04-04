@@ -14,14 +14,12 @@ import { adminOnly } from "../middlewares/admin.middleware.js";
 
 const router = express.Router();
 
-// multer setup (temporary local storage)
-const upload = multer({ dest: "uploads/" });
-
+// Use memory storage for serverless environments
+const upload = multer({ storage: multer.memoryStorage() });
 
 // ✅ Public Routes
 router.get("/", getAllCourses);
 router.get("/:id", getCourseById);
-
 
 // ✅ Admin Routes
 router.post(
@@ -29,7 +27,7 @@ router.post(
   protect,
   adminOnly,
   upload.single("thumbnail"),
-  createCourse
+  createCourse,
 );
 
 router.put(
@@ -37,14 +35,9 @@ router.put(
   protect,
   adminOnly,
   upload.single("thumbnail"),
-  updateCourse
+  updateCourse,
 );
 
-router.delete(
-  "/admin/:id",
-  protect,
-  adminOnly,
-  deleteCourse
-);
+router.delete("/admin/:id", protect, adminOnly, deleteCourse);
 
 export default router;

@@ -1,21 +1,24 @@
-import fs from "fs/promises";
 import { v2 as cloudinary } from "cloudinary";
 
 import Document from "../models/document.model.js";
 import Application from "../models/application.model.js";
 
-
-// helper to safely remove local temp file
-const removeLocalFile = async (filePath) => {
-  try {
-    if (filePath) {
-      await fs.unlink(filePath);
-    }
-  } catch (error) {
-    // ignore cleanup error
-  }
+// Helper to upload buffer to Cloudinary
+const uploadBufferToCloudinary = (buffer, folder) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: "auto",
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      },
+    );
+    uploadStream.end(buffer);
+  });
 };
-
 
 // ✅ Student uploads a document for an application
 export const uploadDocument = async (req, res) => {
@@ -32,7 +35,6 @@ export const uploadDocument = async (req, res) => {
     }
 
     if (!type) {
-      await removeLocalFile(req.file.path);
       return res.status(400).json({
         success: false,
         message: "Document type is required",
@@ -50,7 +52,6 @@ export const uploadDocument = async (req, res) => {
     ];
 
     if (!allowedTypes.includes(type)) {
-      await removeLocalFile(req.file.path);
       return res.status(400).json({
         success: false,
         message: "Invalid document type",
@@ -60,7 +61,6 @@ export const uploadDocument = async (req, res) => {
     const application = await Application.findById(applicationId);
 
     if (!application) {
-      await removeLocalFile(req.file.path);
       return res.status(404).json({
         success: false,
         message: "Application not found",
@@ -69,19 +69,17 @@ export const uploadDocument = async (req, res) => {
 
     // student can upload only for own application
     if (application.studentId.toString() !== studentId) {
-      await removeLocalFile(req.file.path);
       return res.status(403).json({
         success: false,
         message: "You are not allowed to upload documents for this application",
       });
     }
 
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "ccog/documents",
-      resource_type: "auto",
-    });
-
-    await removeLocalFile(req.file.path);
+    // Upload buffer directly to Cloudinary
+    const result = await uploadBufferToCloudinary(
+      req.file.buffer,
+      "ccog/documents",
+    );
 
     const document = await Document.create({
       studentId,
@@ -101,17 +99,12 @@ export const uploadDocument = async (req, res) => {
       document,
     });
   } catch (error) {
-    if (req.file?.path) {
-      await removeLocalFile(req.file.path);
-    }
-
     return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
-
 
 // ✅ Student gets all documents of own application
 export const getMyApplicationDocuments = async (req, res) => {
@@ -151,7 +144,6 @@ export const getMyApplicationDocuments = async (req, res) => {
   }
 };
 
-
 // ✅ Admin gets all documents for any application
 export const getDocumentsByApplicationAdmin = async (req, res) => {
   try {
@@ -172,7 +164,6 @@ export const getDocumentsByApplicationAdmin = async (req, res) => {
     });
   }
 };
-
 
 // ✅ Admin updates document status
 export const updateDocumentStatus = async (req, res) => {
@@ -217,7 +208,6 @@ export const updateDocumentStatus = async (req, res) => {
     });
   }
 };
-
 
 // ✅ Student/Admin delete document
 export const deleteDocument = async (req, res) => {

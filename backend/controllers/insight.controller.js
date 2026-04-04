@@ -1,15 +1,21 @@
-import fs from "fs/promises";
 import { v2 as cloudinary } from "cloudinary";
 import Insight from "../models/insight.model.js";
 
-const removeLocalFile = async (filePath) => {
-  try {
-    if (filePath) {
-      await fs.unlink(filePath);
-    }
-  } catch (error) {
-    // ignore cleanup errors
-  }
+// Helper to upload buffer to Cloudinary
+const uploadBufferToCloudinary = (buffer, folder) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: "image",
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      },
+    );
+    uploadStream.end(buffer);
+  });
 };
 
 const generateSlug = (text = "") => {
@@ -58,7 +64,6 @@ export const createInsight = async (req, res) => {
     } = req.body;
 
     if (!title || !type || !content) {
-      if (req.file?.path) await removeLocalFile(req.file.path);
       return res.status(400).json({
         success: false,
         message: "Title, type, and content are required",
@@ -69,7 +74,6 @@ export const createInsight = async (req, res) => {
 
     const existingSlug = await Insight.findOne({ slug: finalSlug });
     if (existingSlug) {
-      if (req.file?.path) await removeLocalFile(req.file.path);
       return res.status(400).json({
         success: false,
         message: "Slug already exists",
@@ -80,14 +84,13 @@ export const createInsight = async (req, res) => {
     let featuredImagePublicId = "";
 
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "ccog/insights",
-      });
+      const result = await uploadBufferToCloudinary(
+        req.file.buffer,
+        "ccog/insights",
+      );
 
       featuredImage = result.secure_url;
       featuredImagePublicId = result.public_id;
-
-      await removeLocalFile(req.file.path);
     }
 
     const finalStatus = status || "draft";
@@ -115,10 +118,6 @@ export const createInsight = async (req, res) => {
       insight,
     });
   } catch (error) {
-    if (req.file?.path) {
-      await removeLocalFile(req.file.path);
-    }
-
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -245,7 +244,6 @@ export const updateInsight = async (req, res) => {
     const insight = await Insight.findById(req.params.id);
 
     if (!insight) {
-      if (req.file?.path) await removeLocalFile(req.file.path);
       return res.status(404).json({
         success: false,
         message: "Content not found",
@@ -257,14 +255,13 @@ export const updateInsight = async (req, res) => {
         await cloudinary.uploader.destroy(insight.featuredImagePublicId);
       }
 
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "ccog/insights",
-      });
+      const result = await uploadBufferToCloudinary(
+        req.file.buffer,
+        "ccog/insights",
+      );
 
       insight.featuredImage = result.secure_url;
       insight.featuredImagePublicId = result.public_id;
-
-      await removeLocalFile(req.file.path);
     }
 
     const fields = [
