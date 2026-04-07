@@ -4,7 +4,6 @@ import Application from "../models/application.model.js";
 
 export const stripeWebhook = async (req, res) => {
   const sig = req.headers["stripe-signature"];
-
   let event;
 
   try {
@@ -21,14 +20,13 @@ export const stripeWebhook = async (req, res) => {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;
-
         const paymentId = session.metadata?.paymentId;
+
         if (!paymentId) break;
 
         const payment = await Payment.findById(paymentId);
         if (!payment) break;
 
-        // idempotent update
         if (payment.paymentStatus !== "paid") {
           payment.paymentStatus = "paid";
           payment.stripeSessionId = session.id || payment.stripeSessionId;
@@ -37,8 +35,9 @@ export const stripeWebhook = async (req, res) => {
           payment.stripeCustomerEmail =
             session.customer_details?.email || payment.stripeCustomerEmail;
           payment.paymentMethodType =
-            session.payment_method_types?.[0] || "";
+            session.payment_method_types?.[0] || payment.paymentMethodType;
           payment.paidAt = new Date();
+
           await payment.save();
 
           await Application.findByIdAndUpdate(payment.applicationId, {
