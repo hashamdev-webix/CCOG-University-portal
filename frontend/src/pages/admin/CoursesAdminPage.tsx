@@ -657,7 +657,7 @@ export default function CoursesAdminPage() {
 
                 <div>
                   <label className="text-xs font-semibold text-muted-foreground">
-                    Fee (PKR)
+                    Fee
                   </label>
                   <input
                     type="number"
