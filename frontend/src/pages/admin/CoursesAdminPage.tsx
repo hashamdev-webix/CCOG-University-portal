@@ -7,7 +7,7 @@ interface Course {
   title: string;
   shortDescription?: string;
   description: string;
-  category: "business" | "technology" | "short";
+  category: CourseCategory;
   mode: "online" | "offline";
   level: "beginner" | "intermediate" | "advanced";
   duration: string;
@@ -29,7 +29,7 @@ type CourseForm = {
   title: string;
   shortDescription: string;
   description: string;
-  category: "business" | "technology" | "short";
+  category: CourseCategory
   mode: "online" | "offline";
   level: "beginner" | "intermediate" | "advanced";
   duration: string;
@@ -50,7 +50,7 @@ const emptyForm: CourseForm = {
   title: "",
   shortDescription: "",
   description: "",
-  category: "business",
+  category: "business_professional_skills",
   mode: "online",
   level: "beginner",
   duration: "",
@@ -65,6 +65,31 @@ const emptyForm: CourseForm = {
   careerOpportunities: "",
   furtherLearning: "",
   status: "active",
+};
+
+type CourseCategory =
+  | "business_professional_skills"
+  | "technology_digital_skills"
+  | "language_communication"
+  | "creative_arts_media"
+  | "hospitality_service_industry"
+  | "logistics_transportation"
+  | "safety_security_compliance"
+  | "healthcare_exam_preparation"
+  | "education_certification_programs"
+  | "free_short_courses";
+
+const COURSE_CATEGORY_LABELS: Record<CourseCategory, string> = {
+  business_professional_skills: "Business & Professional Skills",
+  technology_digital_skills: "Technology & Digital Skills",
+  language_communication: "Language & Communication",
+  creative_arts_media: "Creative Arts & Media",
+  hospitality_service_industry: "Hospitality & Service Industry",
+  logistics_transportation: "Logistics & Transportation",
+  safety_security_compliance: "Safety, Security & Compliance",
+  healthcare_exam_preparation: "Healthcare & Exam Preparation",
+  education_certification_programs: "Education & Certification Programs",
+  free_short_courses: "Free & Short Courses",
 };
 
 const gradientColors = [
@@ -122,7 +147,7 @@ export default function CoursesAdminPage() {
       title: c.title || "",
       shortDescription: c.shortDescription || "",
       description: c.description || "",
-      category: c.category || "business",
+      category: c.category || "business_professional_skills",
       mode: c.mode || "online",
       level: c.level || "beginner",
       duration: c.duration || "",
@@ -272,7 +297,7 @@ export default function CoursesAdminPage() {
                 </span>
 
                 <span className="text-xs font-medium bg-background/20 backdrop-blur-sm text-white px-2 py-1 rounded-sm capitalize">
-                  {c.category}
+                  {COURSE_CATEGORY_LABELS[c.category]}
                 </span>
               </div>
 
@@ -380,7 +405,7 @@ export default function CoursesAdminPage() {
                     </div>
                   </td>
                   <td className="px-6 py-3 text-muted-foreground hidden md:table-cell capitalize">
-                    {c.category}
+                 {COURSE_CATEGORY_LABELS[c.category]}
                   </td>
                   <td className="px-6 py-3 text-muted-foreground hidden md:table-cell capitalize">
                     {c.mode}
@@ -475,20 +500,47 @@ export default function CoursesAdminPage() {
                   <label className="text-xs font-semibold text-muted-foreground">
                     Category
                   </label>
-                  <select
-                    value={form.category}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        category: e.target.value as "business" | "technology" | "short",
-                      })
-                    }
-                    className="w-full mt-1 px-3 py-2 border border-border rounded-input text-sm bg-background focus:outline-none focus:ring-2 focus:ring-accent"
-                  >
-                    <option value="business">Business</option>
-                    <option value="technology">Technology</option>
-                    <option value="short">Short</option>
-                  </select>
+                 <select
+  value={form.category}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      category: e.target.value as CourseCategory,
+    })
+  }
+  className="w-full mt-1 px-3 py-2 border border-border rounded-input text-sm bg-background focus:outline-none focus:ring-2 focus:ring-accent"
+>
+  <option value="business_professional_skills">
+    Business & Professional Skills
+  </option>
+  <option value="technology_digital_skills">
+    Technology & Digital Skills
+  </option>
+  <option value="language_communication">
+    Language & Communication
+  </option>
+  <option value="creative_arts_media">
+    Creative Arts & Media
+  </option>
+  <option value="hospitality_service_industry">
+    Hospitality & Service Industry
+  </option>
+  <option value="logistics_transportation">
+    Logistics & Transportation
+  </option>
+  <option value="safety_security_compliance">
+    Safety, Security & Compliance
+  </option>
+  <option value="healthcare_exam_preparation">
+    Healthcare & Exam Preparation
+  </option>
+  <option value="education_certification_programs">
+    Education & Certification Programs
+  </option>
+  <option value="free_short_courses">
+    Free & Short Courses
+  </option>
+</select>
                 </div>
 
                 <div>
@@ -583,17 +635,22 @@ export default function CoursesAdminPage() {
 
                 <div className="flex items-end">
                   <label className="flex items-center gap-2 text-sm mt-6">
-                    <input
-                      type="checkbox"
-                      checked={form.isFree}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          isFree: e.target.checked,
-                          fee: e.target.checked ? "" : form.fee,
-                        })
-                      }
-                    />
+                  <input
+  type="checkbox"
+  checked={form.isFree}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      isFree: e.target.checked,
+      fee: e.target.checked ? "" : form.fee,
+      category: e.target.checked
+        ? "free_short_courses"
+        : form.category === "free_short_courses"
+        ? "business_professional_skills"
+        : form.category,
+    })
+  }
+/>
                     Free Course
                   </label>
                 </div>

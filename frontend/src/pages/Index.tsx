@@ -242,7 +242,7 @@ const {currency}=useAuth()
             </Link> */}
           </div>
            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                        {courses.map((course) => (
+                        {courses.slice(0,6).map((course) => (
                           <div
                             key={course._id}
                             className="group bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
@@ -291,12 +291,7 @@ const {currency}=useAuth()
                                   </span>
                                 </div>
           
-                                <div className="flex items-center gap-2 text-sm text-foreground">
-                                  <FaMoneyBillWave className="text-primary" />
-                                  <span>
-                                    <strong>Fee:</strong> {currency} {course.fee}
-                                  </span>
-                                </div>
+                               
                               </div>
           
                               <Link

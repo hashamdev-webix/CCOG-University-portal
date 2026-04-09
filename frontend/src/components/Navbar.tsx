@@ -15,9 +15,46 @@ const dropdowns = [
     label: "Courses",
     basePath: "/courses",
     items: [
-      { label: "Business Programs", to: "/courses/business" },
-      { label: "Technology Programs", to: "/courses/technology" },
-      { label: "Short Courses / Certifications", to: "/courses/short" },
+      {
+        label: "Business & Professional Skills",
+        to: "/courses/business-professional-skills",
+      },
+      {
+        label: "Technology & Digital Skills",
+        to: "/courses/technology-digital-skills",
+      },
+      {
+        label: "Language & Communication",
+        to: "/courses/language-communication",
+      },
+      {
+        label: "Creative Arts & Media",
+        to: "/courses/creative-arts-media",
+      },
+      {
+        label: "Hospitality & Service Industry",
+        to: "/courses/hospitality-service-industry",
+      },
+      {
+        label: "Logistics & Transportation",
+        to: "/courses/logistics-transportation",
+      },
+      {
+        label: "Safety, Security & Compliance",
+        to: "/courses/safety-security-compliance",
+      },
+      {
+        label: "Healthcare & Exam Preparation",
+        to: "/courses/healthcare-exam-preparation",
+      },
+      {
+        label: "Education & Certification Programs",
+        to: "/courses/education-certification-programs",
+      },
+      {
+        label: "Free & Short Courses",
+        to: "/courses/free-short-courses",
+      },
     ],
   },
   {
@@ -102,7 +139,7 @@ export function Navbar() {
                   />
                 </button>
 
-                <div className="absolute left-0 mt-2 w-64 bg-background border border-border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <div className="absolute left-0 mt-2 w-80 bg-background border border-border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                   {dropdown.items.map((item) => (
                     <Link
                       key={item.to}

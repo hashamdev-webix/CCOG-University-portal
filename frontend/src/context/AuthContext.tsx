@@ -37,12 +37,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const res = await api.post("/auth/login", { email, password });
     setUser(res.data.user);
   };
-
+ 
   const adminLogin = async (email: string, password: string) => {
     const res = await api.post("/auth/admin/login", { email, password });
     setUser(res.data.user);
   };
-
+ 
   const register = async (data: Record<string, string>) => {
     const res = await api.post("/auth/register", data);
     setUser(res.data.user);
