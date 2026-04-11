@@ -80,13 +80,13 @@ export default function CourseCard({ course, categoryLabel }: CourseCardProps) {
             </div>
           )}
 
-          <div className="flex items-center gap-2 text-sm text-foreground">
+          {/* <div className="flex items-center gap-2 text-sm text-foreground">
             <FaMoneyBillWave className="text-primary" />
             <span>
               <strong>Fee:</strong>{" "}
               {course.isFree ? "Free" : `${currency || "PKR"} ${course.fee}`}
             </span>
-          </div>
+          </div> */}
         </div>
 
         <Link
