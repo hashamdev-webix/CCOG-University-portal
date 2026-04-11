@@ -88,7 +88,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           <Link to="/" className="flex items-center gap-2 shrink-0">
-           <img src="/logo.png" alt="" className="w-32 h-32" />
+           <img src="/logo.png" alt="" className="w-24 h-24" />
            
           </Link>
 
