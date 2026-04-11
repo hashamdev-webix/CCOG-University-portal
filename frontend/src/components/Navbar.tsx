@@ -88,12 +88,8 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           <Link to="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-input bg-primary flex items-center justify-center shadow-soft">
-              <FaGraduationCap size={16} className="text-primary-foreground" />
-            </div>
-            <span className="font-black text-lg sm:text-xl tracking-tight text-foreground">
-              CCOG
-            </span>
+           <img src="/logo.png" alt="" className="w-32 h-32" />
+           
           </Link>
 
           <div className="hidden lg:flex items-center gap-6 xl:gap-8">
