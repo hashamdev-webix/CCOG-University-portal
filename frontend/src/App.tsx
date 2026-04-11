@@ -60,14 +60,14 @@ import PaymentCancel from "@/pages/PaymentCancel.tsx";
 import Articles from "./pages/admin/Articles.tsx";
 import InsightDetails from "./pages/InsightDetails.tsx";
 import ContactMessagesPage from "./pages/admin/ContactMessagesPage.tsx";
-import CreativeArtsMediaPage from "./pages/courses/CreativeArtsMediaPage.tsx";
-import EducationCertificationProgramsPage from "./pages/courses/EducationCertificationProgramsPage.tsx";
-import HealthcareExamPreparationPage from "./pages/courses/HealthcareExamPreparationPage.tsx";
-import HospitalityServiceIndustryPage from "./pages/courses/HospitalityServiceIndustryPage.tsx";
+
 import LanguageCommunicationPage from "./pages/courses/LanguageCommunicationPage.tsx";
-import LogisticsTransportationPage from "./pages/courses/LogisticsTransportationPage.tsx";
-import SafetySecurityCompliancePage from "./pages/courses/SafetySecurityCompliancePage.tsx";
+
 import FreeShortCoursesPage from "./pages/courses/FreeShortCoursesPage.tsx";
+import AllCoursesPage from "./pages/courses/AllCoursesPage.tsx";
+import LongTermCoursesPage from "./pages/courses/LongTermCoursesPage.tsx";
+import ArtsMediaPage from "./pages/courses/AtrsMediaPage.tsx";
+import OtherCoursesPage from "./pages/courses/OtherCoursesPage.tsx";
 const queryClient = new QueryClient();
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
@@ -108,22 +108,14 @@ const App = () => (
              {/* Courses */}
 
 
-      <Route path="/courses/business-professional-skills" element={<BusinessProfessionalSkillsPage />} />
-      <Route path="/courses/technology-digital-skills" element={<TechnologyDigitalSkillsPage />} />
-      <Route path="/courses/free-short-courses" element={<FreeShortCoursesPage />} />
-      <Route path="/courses/creative-arts-media" element={<CreativeArtsMediaPage />} />
-      <Route path="/courses/education-certification-programs" element={<EducationCertificationProgramsPage />} />
-      <Route path="/courses/healthcare-exam-preparation" element={<HealthcareExamPreparationPage />} />
-      <Route path="/courses/hospitality-service-industry" element={<HospitalityServiceIndustryPage />} />
-      <Route path="/courses/language-communication" element={<LanguageCommunicationPage />} />
-      <Route path="/courses/logistics-transportation" element={<LogisticsTransportationPage />} />
-      <Route path="/courses/safety-security-compliance" element={<SafetySecurityCompliancePage />} />
+   <Route path="/courses" element={<AllCoursesPage />} />
+  <Route path="/courses/free-short-courses" element={<FreeShortCoursesPage />} />
+  <Route path="/courses/long-term-courses" element={<LongTermCoursesPage />} />
+  <Route path="/courses/technology-digital-skills" element={<TechnologyDigitalSkillsPage />} />
+  <Route path="/courses/language-communication" element={<LanguageCommunicationPage />} />
+  <Route path="/courses/arts-media" element={<ArtsMediaPage />} />
+  <Route path="/courses/other-courses" element={<OtherCoursesPage />} />
       <Route path="/courses/details/:id" element={<CourseDetails />} />
-
-
-
-
-
 
  <Route path="/admissions/how-to-apply" element={<HowToApply />} />
       <Route path="/admissions/requirements" element={<Requirements />} />

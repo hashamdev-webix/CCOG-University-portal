@@ -53,12 +53,11 @@ export const createCourse = async (req, res) => {
       shortDescription,
       description,
       category,
-      mode,
       level,
       duration,
       fee,
       isFree,
-      seats,
+    
       certification,
       eligibility,
       learningPoints,
@@ -69,11 +68,11 @@ export const createCourse = async (req, res) => {
       status,
     } = req.body;
 
-    if (!title || !description || !category || !mode || !duration || !seats) {
+    if (!title || !description || !category || !duration) {
       return res.status(400).json({
         success: false,
         message:
-          "Title, description, category, mode, duration, and seats are required",
+          "Title, description, category, and duration are required",
       });
     }
 
@@ -111,12 +110,10 @@ export const createCourse = async (req, res) => {
       shortDescription,
       description,
       category,
-      mode,
       level,
       duration,
       isFree: parsedIsFree,
       fee: parsedFee,
-      seats: Number(seats),
       certification,
       eligibility: parseArrayField(eligibility),
       learningPoints: parseArrayField(learningPoints),
@@ -145,12 +142,11 @@ export const createCourse = async (req, res) => {
 // ✅ Get All Courses (Public)
 export const getAllCourses = async (req, res) => {
   try {
-    const { category, mode, level, isFree } = req.query;
+    const { category,  level, isFree } = req.query;
 
     const filter = { status: "active" };
 
     if (category) filter.category = category;
-    if (mode) filter.mode = mode;
     if (level) filter.level = level;
     if (isFree !== undefined) filter.isFree = parseBoolean(isFree);
 
@@ -226,7 +222,6 @@ export const updateCourse = async (req, res) => {
       "shortDescription",
       "description",
       "category",
-      "mode",
       "level",
       "duration",
       "certification",
@@ -239,9 +234,7 @@ export const updateCourse = async (req, res) => {
       }
     });
 
-    if (req.body.seats !== undefined) {
-      course.seats = Number(req.body.seats);
-    }
+ 
 
     // arrays
     if (req.body.eligibility !== undefined) {

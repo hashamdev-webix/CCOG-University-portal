@@ -11,12 +11,12 @@ interface Course {
   shortDescription?: string;
   description: string;
   category: "business" | "technology" | "short";
-  mode: "online" | "offline";
+ 
   level: "beginner" | "intermediate" | "advanced";
   duration: string;
   isFree: boolean;
   fee: number;
-  seats: number;
+ 
   certification?: string;
   eligibility?: string[];
   learningPoints?: string[];
@@ -155,9 +155,7 @@ const {currency}=useAuth()
                     <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary capitalize">
                       {course.category}
                     </span>
-                    <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-secondary text-secondary-foreground capitalize">
-                      {course.mode}
-                    </span>
+                   
                     <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-muted text-foreground capitalize">
                       {course.level}
                     </span>
@@ -187,9 +185,7 @@ const {currency}=useAuth()
                   </p>
 
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 text-sm">
-                    <div className="p-4 rounded-xl border border-border bg-background">
-                      <strong>Mode:</strong> <span className="capitalize">{course.mode}</span>
-                    </div>
+                   
                     <div className="p-4 rounded-xl border border-border bg-background">
                       <strong>Level:</strong> <span className="capitalize">{course.level}</span>
                     </div>
@@ -199,9 +195,7 @@ const {currency}=useAuth()
                     <div className="p-4 rounded-xl border border-border bg-background">
                       <strong>Fee:</strong> {priceLabel}
                     </div>
-                    <div className="p-4 rounded-xl border border-border bg-background">
-                      <strong>Seats:</strong> {course.seats}
-                    </div>
+                   
                     <div className="p-4 rounded-xl border border-border bg-background">
                       <strong>Certification:</strong>{" "}
                       {course.certification || "Not specified"}

@@ -39,7 +39,6 @@ const LanguageCommunicationPage = () => {
   useEffect(() => {
     getCourses();
   }, []);
-
   return (
     <>
       <Navbar />

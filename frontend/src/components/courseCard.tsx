@@ -64,29 +64,11 @@ export default function CourseCard({ course, categoryLabel }: CourseCardProps) {
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-foreground">
-            <FaLaptop className="text-primary" />
-            <span>
-              <strong>Mode:</strong> {course.mode}
-            </span>
-          </div>
+         
 
-          {course.seats !== undefined && (
-            <div className="flex items-center gap-2 text-sm text-foreground">
-              <FaUsers className="text-primary" />
-              <span>
-                <strong>Seats:</strong> {course.seats}
-              </span>
-            </div>
-          )}
+         
 
-          {/* <div className="flex items-center gap-2 text-sm text-foreground">
-            <FaMoneyBillWave className="text-primary" />
-            <span>
-              <strong>Fee:</strong>{" "}
-              {course.isFree ? "Free" : `${currency || "PKR"} ${course.fee}`}
-            </span>
-          </div> */}
+        
         </div>
 
         <Link

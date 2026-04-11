@@ -11,52 +11,40 @@ const navLinks = [
 ];
 
 const dropdowns = [
-  {
-    label: "Courses",
-    basePath: "/courses",
-    items: [
-      {
-        label: "Business & Professional Skills",
-        to: "/courses/business-professional-skills",
-      },
-      {
-        label: "Technology & Digital Skills",
-        to: "/courses/technology-digital-skills",
-      },
-      {
-        label: "Language & Communication",
-        to: "/courses/language-communication",
-      },
-      {
-        label: "Creative Arts & Media",
-        to: "/courses/creative-arts-media",
-      },
-      {
-        label: "Hospitality & Service Industry",
-        to: "/courses/hospitality-service-industry",
-      },
-      {
-        label: "Logistics & Transportation",
-        to: "/courses/logistics-transportation",
-      },
-      {
-        label: "Safety, Security & Compliance",
-        to: "/courses/safety-security-compliance",
-      },
-      {
-        label: "Healthcare & Exam Preparation",
-        to: "/courses/healthcare-exam-preparation",
-      },
-      {
-        label: "Education & Certification Programs",
-        to: "/courses/education-certification-programs",
-      },
-      {
-        label: "Free & Short Courses",
-        to: "/courses/free-short-courses",
-      },
-    ],
-  },
+ {
+  label: "Courses",
+  basePath: "/courses",
+  items: [
+    {
+      label: "All",
+      to: "/courses",
+    },
+    {
+      label: "Short Term Free Courses",
+      to: "/courses/free-short-courses",
+    },
+    {
+      label: "Long Term Courses",
+      to: "/courses/long-term-courses",
+    },
+    {
+      label: "Technology and Digital Skills",
+      to: "/courses/technology-digital-skills",
+    },
+    {
+      label: "Language and Communication",
+      to: "/courses/language-communication",
+    },
+    {
+      label: "Arts and Media",
+      to: "/courses/arts-media",
+    },
+    {
+      label: "Other Courses",
+      to: "/courses/other-courses",
+    },
+  ],
+},
   {
     label: "Admissions",
     basePath: "/admissions",

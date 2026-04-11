@@ -20,28 +20,22 @@ const courseSchema = new mongoose.Schema(
       trim: true,
     },
 
-    category: {
-      type: String,
-      enum: [
-        "business_professional_skills",
-        "technology_digital_skills",
-        "language_communication",
-        "creative_arts_media",
-        "hospitality_service_industry",
-        "logistics_transportation",
-        "safety_security_compliance",
-        "healthcare_exam_preparation",
-        "education_certification_programs",
-        "free_short_courses",
-      ],
-      required: true,
-    },
+   
+category: {
+  type: String,
+  enum: [
+    "technology_digital_skills",   
+    "language_communication",      
+    "arts_media",                  
+    "long_term_courses",            
+    "free_short_courses",   
+    "other_courses"               
+  ],
+  required: true,
+},
 
-    mode: {
-      type: String,
-      enum: ["online", "offline"],
-      required: true,
-    },
+    
+   
 
     level: {
       type: String,
@@ -119,11 +113,7 @@ const courseSchema = new mongoose.Schema(
       default: "",
     },
 
-    seats: {
-      type: Number,
-      required: true,
-      min: 1,
-    },
+    
 
     status: {
       type: String,

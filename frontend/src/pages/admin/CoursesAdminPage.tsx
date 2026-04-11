@@ -2,18 +2,17 @@ import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Clock, Users, Tag } from "lucide-react";
 import api from "@/lib/api";
 
+
 interface Course {
   _id: string;
   title: string;
   shortDescription?: string;
   description: string;
   category: CourseCategory;
-  mode: "online" | "offline";
   level: "beginner" | "intermediate" | "advanced";
   duration: string;
   isFree: boolean;
   fee: number;
-  seats: number;
   certification?: string;
   eligibility: string[];
   learningPoints: string[];
@@ -24,18 +23,15 @@ interface Course {
   status: "active" | "inactive";
   thumbnail: string;
 }
-
 type CourseForm = {
   title: string;
   shortDescription: string;
   description: string;
-  category: CourseCategory
-  mode: "online" | "offline";
+  category: CourseCategory;
   level: "beginner" | "intermediate" | "advanced";
   duration: string;
   isFree: boolean;
   fee: string;
-  seats: string;
   certification: string;
   eligibility: string;
   learningPoints: string;
@@ -50,13 +46,11 @@ const emptyForm: CourseForm = {
   title: "",
   shortDescription: "",
   description: "",
-  category: "business_professional_skills",
-  mode: "online",
+  category: "technology_digital_skills",
   level: "beginner",
   duration: "",
   isFree: false,
   fee: "",
-  seats: "",
   certification: "",
   eligibility: "",
   learningPoints: "",
@@ -68,28 +62,20 @@ const emptyForm: CourseForm = {
 };
 
 type CourseCategory =
-  | "business_professional_skills"
   | "technology_digital_skills"
   | "language_communication"
-  | "creative_arts_media"
-  | "hospitality_service_industry"
-  | "logistics_transportation"
-  | "safety_security_compliance"
-  | "healthcare_exam_preparation"
-  | "education_certification_programs"
-  | "free_short_courses";
+  | "arts_media"
+  | "long_term_courses"
+  | "free_short_courses"
+  | "other_courses";
 
 const COURSE_CATEGORY_LABELS: Record<CourseCategory, string> = {
-  business_professional_skills: "Business & Professional Skills",
-  technology_digital_skills: "Technology & Digital Skills",
-  language_communication: "Language & Communication",
-  creative_arts_media: "Creative Arts & Media",
-  hospitality_service_industry: "Hospitality & Service Industry",
-  logistics_transportation: "Logistics & Transportation",
-  safety_security_compliance: "Safety, Security & Compliance",
-  healthcare_exam_preparation: "Healthcare & Exam Preparation",
-  education_certification_programs: "Education & Certification Programs",
-  free_short_courses: "Free & Short Courses",
+  technology_digital_skills: "Technology and Digital Skills",
+  language_communication: "Language and Communication",
+  arts_media: "Arts and Media",
+  long_term_courses: "Long Term Courses",
+  free_short_courses: "Short Term Free Courses",
+  other_courses: "Other Courses",
 };
 
 const gradientColors = [
@@ -147,13 +133,13 @@ export default function CoursesAdminPage() {
       title: c.title || "",
       shortDescription: c.shortDescription || "",
       description: c.description || "",
-      category: c.category || "business_professional_skills",
-      mode: c.mode || "online",
+      category: c.category || "technology_digital_skills",
+     
       level: c.level || "beginner",
       duration: c.duration || "",
       isFree: c.isFree ?? false,
       fee: c.isFree ? "" : String(c.fee ?? ""),
-      seats: String(c.seats ?? ""),
+      
       certification: c.certification || "",
       eligibility: arrayToTextarea(c.eligibility),
       learningPoints: arrayToTextarea(c.learningPoints),
@@ -191,11 +177,11 @@ export default function CoursesAdminPage() {
       fd.append("shortDescription", form.shortDescription);
       fd.append("description", form.description);
       fd.append("category", form.category);
-      fd.append("mode", form.mode);
+   
       fd.append("level", form.level);
       fd.append("duration", form.duration);
       fd.append("isFree", String(form.isFree));
-      fd.append("seats", form.seats);
+    
       fd.append("certification", form.certification);
       fd.append("status", form.status);
 
@@ -292,9 +278,7 @@ export default function CoursesAdminPage() {
                   gradientColors[idx % gradientColors.length]
                 } flex items-end justify-between p-4`}
               >
-                <span className="text-xs font-medium bg-background/20 backdrop-blur-sm text-white px-2 py-1 rounded-sm capitalize">
-                  {c.mode}
-                </span>
+               
 
                 <span className="text-xs font-medium bg-background/20 backdrop-blur-sm text-white px-2 py-1 rounded-sm capitalize">
                   {COURSE_CATEGORY_LABELS[c.category]}
@@ -320,10 +304,7 @@ export default function CoursesAdminPage() {
                     <Clock size={12} />
                     {c.duration}
                   </span>
-                  <span className="flex items-center gap-1">
-                    <Users size={12} />
-                    {c.seats} seats
-                  </span>
+                 
                 </div>
 
                 <p
@@ -407,16 +388,14 @@ export default function CoursesAdminPage() {
                   <td className="px-6 py-3 text-muted-foreground hidden md:table-cell capitalize">
                  {COURSE_CATEGORY_LABELS[c.category]}
                   </td>
-                  <td className="px-6 py-3 text-muted-foreground hidden md:table-cell capitalize">
-                    {c.mode}
-                  </td>
+                  
                   <td className="px-6 py-3 text-muted-foreground hidden lg:table-cell capitalize">
                     {c.level}
                   </td>
                   <td className="px-6 py-3 text-muted-foreground hidden lg:table-cell">
                     {c.duration}
                   </td>
-                  <td className="px-6 py-3 text-muted-foreground">{c.seats}</td>
+                  
                   <td className="px-6 py-3 hidden md:table-cell">
                     <span className={c.isFree ? "text-green-600 font-medium" : "text-muted-foreground"}>
                       {getPriceLabel(c)}
@@ -495,12 +474,12 @@ export default function CoursesAdminPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-muted-foreground">
                     Category
                   </label>
-                 <select
+   <select
   value={form.category}
   onChange={(e) =>
     setForm({
@@ -508,59 +487,29 @@ export default function CoursesAdminPage() {
       category: e.target.value as CourseCategory,
     })
   }
-  className="w-full mt-1 px-3 py-2 border border-border rounded-input text-sm bg-background focus:outline-none focus:ring-2 focus:ring-accent"
+  className="w-full mt-1 px-3 py-2 border border-border rounded-input text-sm bg-background"
 >
-  <option value="business_professional_skills">
-    Business & Professional Skills
-  </option>
   <option value="technology_digital_skills">
-    Technology & Digital Skills
+    Technology and Digital Skills
   </option>
   <option value="language_communication">
-    Language & Communication
+    Language and Communication
   </option>
-  <option value="creative_arts_media">
-    Creative Arts & Media
+  <option value="arts_media">
+    Arts and Media
   </option>
-  <option value="hospitality_service_industry">
-    Hospitality & Service Industry
-  </option>
-  <option value="logistics_transportation">
-    Logistics & Transportation
-  </option>
-  <option value="safety_security_compliance">
-    Safety, Security & Compliance
-  </option>
-  <option value="healthcare_exam_preparation">
-    Healthcare & Exam Preparation
-  </option>
-  <option value="education_certification_programs">
-    Education & Certification Programs
+  <option value="long_term_courses">
+    Long Term Courses
   </option>
   <option value="free_short_courses">
-    Free & Short Courses
+    Short Term Free Courses
+  </option>
+  <option value="other_courses">
+    Other Courses
   </option>
 </select>
                 </div>
 
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Mode
-                  </label>
-                  <select
-                    value={form.mode}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        mode: e.target.value as "online" | "offline",
-                      })
-                    }
-                    className="w-full mt-1 px-3 py-2 border border-border rounded-input text-sm bg-background focus:outline-none focus:ring-2 focus:ring-accent"
-                  >
-                    <option value="online">Online</option>
-                    <option value="offline">Offline</option>
-                  </select>
-                </div>
 
                 <div>
                   <label className="text-xs font-semibold text-muted-foreground">
@@ -602,7 +551,7 @@ export default function CoursesAdminPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-muted-foreground">
                     Duration
@@ -618,23 +567,10 @@ export default function CoursesAdminPage() {
                   />
                 </div>
 
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Seats
-                  </label>
-                  <input
-                    required
-                    type="number"
-                    value={form.seats}
-                    onChange={(e) =>
-                      setForm({ ...form, seats: e.target.value })
-                    }
-                    className="w-full mt-1 px-3 py-2 border border-border rounded-input text-sm bg-background focus:outline-none focus:ring-2 focus:ring-accent"
-                  />
-                </div>
+              
 
                 <div className="flex items-end">
-                  <label className="flex items-center gap-2 text-sm mt-6">
+                  <label className="flex items-center gap-2 text-sm ">
                   <input
   type="checkbox"
   checked={form.isFree}
@@ -646,7 +582,7 @@ export default function CoursesAdminPage() {
       category: e.target.checked
         ? "free_short_courses"
         : form.category === "free_short_courses"
-        ? "business_professional_skills"
+        ? "technology_digital_skills"
         : form.category,
     })
   }
